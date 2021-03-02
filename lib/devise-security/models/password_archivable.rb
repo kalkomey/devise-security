@@ -29,7 +29,7 @@ module Devise
         when true
           [1, archive_count].max
         when false
-          0
+          -1
         else
           deny_old_passwords.to_i
         end
@@ -39,7 +39,7 @@ module Devise
       # @return [true] if current password was used previously
       # @return [false] if disabled or not previously used
       def password_archive_included?
-        return false unless max_old_passwords.positive?
+        return false if max_old_passwords.negative?
 
         old_passwords_including_cur_change = old_passwords.order(created_at: :desc).limit(max_old_passwords).pluck(:encrypted_password)
         old_passwords_including_cur_change << encrypted_password_was # include most recent change in list, but don't save it yet!
